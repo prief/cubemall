@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kkb.cubemall.search.dao.SpuInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.kkb.cubemall.search.entity.SpuInfoEntity" id="spuInfoMap">
+        <result property="id" column="id"/>
+        <result property="spuName" column="spu_name"/>
+        <result property="spuDescription" column="spu_description"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="weight" column="weight"/>
+        <result property="publishStatus" column="publish_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="getSpuInfoList" resultType="com.kkb.cubemall.search.model.SpuInfo">
+        SELECT
+            a.id,
+            a.spu_name spuName,
+            a.spu_description description,
+            a.category_id categoryId,
+            d.`name` categoryName,
+            a.brand_id brandId,
+            e.`name` brandName,
+            a.update_time updateTime,
+            b.img_url image,
+            c.price
+        FROM
+            tb_spu_info a
+                LEFT JOIN ( SELECT * FROM tb_spu_images WHERE default_img = 1 ) b ON a.id = b.spu_id
+                LEFT JOIN ( SELECT min( price ) price, spu_id FROM tb_sku_info GROUP BY spu_id ) c ON c.spu_id = a.id
+                LEFT JOIN tb_category d ON a.category_id = d.id
+                LEFT JOIN tb_brand e ON a.brand_id = e.id
+    </select>
+
+    <select id="getSpuById" parameterType="long" resultType="com.kkb.cubemall.search.model.SpuInfo">
+        SELECT
+            a.id,
+            a.spu_name spuName,
+            a.spu_description description,
+            a.category_id categoryId,
+            d.`name` categoryName,
+            a.brand_id brandId,
+            e.`name` brandName,
+            a.update_time updateTime,
+            b.img_url image,
+            c.price
+        FROM
+            tb_spu_info a
+                LEFT JOIN ( SELECT * FROM tb_spu_images WHERE default_img = 1 ) b ON a.id = b.spu_id
+                LEFT JOIN ( SELECT min( price ) price, spu_id FROM tb_sku_info GROUP BY spu_id ) c ON c.spu_id = a.id
+                LEFT JOIN tb_category d ON a.category_id = d.id
+                LEFT JOIN tb_brand e ON a.brand_id = e.id
+        WHERE a.id=#{spuId}
+    </select>
+
+
+</mapper>
